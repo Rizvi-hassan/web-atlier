@@ -74,7 +74,7 @@ const NewsLetter = () => {
     }, [activeCard])
 
     return (
-        <div ref={containerRef} className='relative w-screen py-20 px-4 bg-gradient-to-b from-white to-gray-50'>
+        <div ref={containerRef} className='relative w-screen py-20 px-4 '>
             <div className='max-w-7xl mx-auto'>
                 <AnimatedTitle
                     title={"Disc<b>o</b>ver th<b>e</b> world`s F<b>e</b>rarri News"}
@@ -110,49 +110,31 @@ const NewsLetter = () => {
                                 className='flex flex-col gap-6 min-h-[400px] transition-opacity duration-300'
                             >
                                 <div className='flex items-center gap-4'>
-                                    <div className='flex items-center justify-center w-10 h-10 rounded-full bg-blue-300 text-blue-900 font-bold text-sm'>
+                                    <div className='flex items-center justify-center w-10 h-10 rounded-full bg-red-500 text-white font-bold text-sm'>
                                         {index + 1}
                                     </div>
-                                    <div className='h-px flex-1 bg-gradient-to-r from-blue-300 to-transparent' />
+                                    <div className='h-px flex-1 bg-gradient-to-r from-red-500 to-transparent' />
                                 </div>
 
                                 <h2 className='font-michroma text-2xl sm:text-3xl lg:text-4xl font-bold uppercase leading-tight text-blue-200'>
                                     {item.head}
                                 </h2>
 
-                                <p className='font-circular-web text-base sm:text-lg text-blue-75 leading-relaxed'>
+                                <p className='font-circular-web text-base sm:text-lg text-gray-700 leading-relaxed'>
                                     {item.desc}
                                 </p>
 
                                 <div className='flex gap-3 pt-4'>
-                                    <button className='px-6 py-3 bg-blue-300 text-blue-900 font-semibold rounded-lg hover:bg-blue-400 transition-colors duration-300'>
+                                    <button className='px-6 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-800 transition-colors duration-300'>
                                         Read More
                                     </button>
-                                    <button className='px-6 py-3 border border-blue-300 text-blue-200 font-semibold rounded-lg hover:bg-blue-300 hover:text-blue-900 transition-colors duration-300'>
+                                    <button className='px-6 py-3 border border-red-500 text-red-500 font-semibold rounded-lg hover:bg-red-500 hover:text-white transition-colors duration-300'>
                                         Share
                                     </button>
                                 </div>
                             </div>
                         ))}
                     </div>
-                </div>
-
-                {/* Progress Indicator */}
-                <div className='fixed bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg z-50'>
-                    {news.map((_, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => {
-                                contentRefs.current[idx]?.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'center'
-                                })
-                            }}
-                            className={`h-2 rounded-full transition-all duration-300 ${idx === activeCard ? 'w-8 bg-blue-300' : 'w-2 bg-blue-75'
-                                }`}
-                            aria-label={`Go to news ${idx + 1}`}
-                        />
-                    ))}
                 </div>
             </div>
         </div>

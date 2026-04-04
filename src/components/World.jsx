@@ -31,7 +31,7 @@ const World = () => {
                 <p>Ferrari is a brand that represents the pinnacle of automotive engineering and performance.</p>
             </div>
 
-            <div className='h-dvh w-screen mt-10' id='clip'>
+            <div className='h-dvh w-full mt-10' id='clip'>
                 <div className='mask-clip-path about-image'>
                     <img
                         src='/images/ferarriWorld.jpeg'

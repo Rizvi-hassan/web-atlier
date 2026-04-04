@@ -176,7 +176,7 @@ const Hero = () => {
                     />
                 </div>
 
-                <h1 className='hero-tag absolute bottom-5 right-5 z-40 special-font '
+                <h1 className='hero-tag absolute bottom-5 right-5 z-40 special-font !text-red-500'
                     dangerouslySetInnerHTML={toHtml(tags[currentIdx - 1]?.tag)}
                 />
 
@@ -193,8 +193,7 @@ const Hero = () => {
 
             </div>
             <h1 className='hero-tag absolute bottom-5 right-5 -z-40 special-font text-black'
-                    dangerouslySetInnerHTML={toHtml(tags[currentIdx - 1]?.tag)}
-                />
+                    dangerouslySetInnerHTML={toHtml(tags[currentIdx - 1]?.tag)}/>
 
 
 
