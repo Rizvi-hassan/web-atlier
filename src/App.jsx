@@ -7,6 +7,8 @@ import Hero from './components/Hero';
 import Navbar from './components/Navbar';
 import NewsLetter from './components/NewsLetter';
 import World from './components/World';
+import Bento from './components/Bento';
+import Footer from './components/Footer';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -50,6 +52,9 @@ function App() {
       <Hero />
       <NewsLetter />
       <World />
+      <Bento />
+      <Footer />
+      {/* <div className='min-h-screen'></div> */}
 
       {loading && (
         <div

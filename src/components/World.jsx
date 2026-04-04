@@ -19,7 +19,9 @@ const World = () => {
         clipAnimation.to('.mask-clip-path', {
             width: '100vw',
             height: '100vh',
-            borderRadius: 0
+            borderRadius: 0,
+            padding: 0,
+            margin: 0,
         })
     }, [])
     return (
@@ -32,11 +34,11 @@ const World = () => {
             </div>
 
             <div className='h-dvh w-full mt-10' id='clip'>
-                <div className='mask-clip-path about-image'>
+                <div className='mask-clip-path about-image h-1/2'>
                     <img
                         src='/images/ferarriWorld.jpeg'
                         alt='Background'
-                        className='aboslute left-0 top-0 size-full object-center object-cover'
+                        className='size-full object-cover'
                     />
                 </div>
             </div>
