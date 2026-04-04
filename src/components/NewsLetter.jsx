@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react'
 import gsap from 'gsap'
-import { TextPlugin } from 'gsap/TextPlugin'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import AnimatedTitle from './AnimatedTitle'
 
-gsap.registerPlugin(TextPlugin)
+gsap.registerPlugin(ScrollTrigger)
 
 const news = [
     {
@@ -24,202 +24,135 @@ const news = [
 ]
 
 const NewsLetter = () => {
-    const [currentIndex, setCurrentIndex] = useState(0)
-    const headingRef = useRef(null)
-    const descriptionRef = useRef(null)
-    const imageRef = useRef(null)
+    const [activeCard, setActiveCard] = useState(0)
+    const contentRefs = useRef([])
+    const imageRefs = useRef([])
     const containerRef = useRef(null)
 
-    const animateSlide = (nextIndex) => {
-        const tl = gsap.timeline()
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            // Create scroll trigger for each news item
+            contentRefs.current.forEach((content, index) => {
+                if (!content) return
 
-        // Fade out image
-        tl.to(imageRef.current, {
-            opacity: 0,
-            duration: 0.4,
-            ease: 'power2.out'
-        }, 0)
+                ScrollTrigger.create({
+                    trigger: content,
+                    start: 'top center',
+                    end: 'bottom center',
+                    onEnter: () => setActiveCard(index),
+                    onEnterBack: () => setActiveCard(index),
+                })
+            })
+        }, containerRef)
 
-        // Animate out current text
-        tl.to(
-            headingRef.current,
-            {
-                opacity: 0,
-                y: -20,
-                duration: 0.4,
-                ease: 'power2.out'
-            },
-            0
-        )
-
-        tl.to(
-            descriptionRef.current,
-            {
-                opacity: 0,
-                y: -20,
-                duration: 0.4,
-                ease: 'power2.out'
-            },
-            0.1
-        )
-
-        // Update index and content after animation
-        tl.call(() => {
-            setCurrentIndex(nextIndex)
-        })
-
-        // We'll handle the incoming animation in useEffect when content updates
-    }
+        return () => ctx.revert()
+    }, [])
 
     useEffect(() => {
-        const currentNews = news[currentIndex]
-        const tl = gsap.timeline()
+        // Fade in/out images based on active card
+        imageRefs.current.forEach((img, index) => {
+            if (!img) return
 
-        // Update content
-        headingRef.current.textContent = currentNews.head
-        descriptionRef.current.textContent = currentNews.desc
-        imageRef.current.src = currentNews.img
-
-        // Animate in incoming image with fade
-        tl.fromTo(
-            imageRef.current,
-            { opacity: 0 },
-            {
-                opacity: 1,
-                duration: 0.6,
-                ease: 'power2.inOut'
-            },
-            0
-        )
-
-        // Animate in heading character by character
-        tl.fromTo(
-            headingRef.current,
-            { opacity: 0, y: 20 },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.6,
-                ease: 'power2.out'
-            },
-            0.2
-        )
-
-        // Animate in description
-        tl.fromTo(
-            descriptionRef.current,
-            { opacity: 0, y: 20 },
-            {
-                opacity: 1,
-                y: 0,
+            gsap.to(img, {
+                opacity: index === activeCard ? 1 : 0.3,
+                scale: index === activeCard ? 1 : 0.95,
                 duration: 0.5,
                 ease: 'power2.out'
-            },
-            0.35
-        )
+            })
+        })
 
-        return () => {
-            tl.kill()
-        }
-    }, [currentIndex])
+        // Highlight active content
+        contentRefs.current.forEach((content, index) => {
+            if (!content) return
 
-    const handleNext = () => {
-        animateSlide((currentIndex + 1) % news.length)
-    }
-
-    const handlePrev = () => {
-        animateSlide((currentIndex - 1 + news.length) % news.length)
-    }
+            gsap.to(content, {
+                opacity: index === activeCard ? 1 : 0.5,
+                duration: 0.4,
+                ease: 'power2.out'
+            })
+        })
+    }, [activeCard])
 
     return (
-        <div ref={containerRef} className='relative w-screen py-20 px-4'>
+        <div ref={containerRef} className='relative w-screen py-20 px-4 bg-gradient-to-b from-white to-gray-50'>
             <div className='max-w-7xl mx-auto'>
+                <AnimatedTitle
+                    title={"Disc<b>o</b>ver th<b>e</b> world`s F<b>e</b>rarri News"}
+                    containerClass={'text-black mb-20'}
+                />
 
-                <AnimatedTitle title={"Disc<b>o</b>ver th<b>e</b> world`s F<b>e</b>rarri News"} containerClass={'text-black'}/>
-                
-                <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center justify-items-center lg:justify-items-start mt-10'>
-                    {/* Image Section */}
-                    <div className='relative overflow-hidden rounded-xl h-96 lg:h-125'>
-                        <img
-                            ref={imageRef}
-                            src={news[currentIndex].img}
-                            alt={news[currentIndex].head}
-                            className='w-full h-full object-cover'
-                        />
-                    </div>
-
-                    {/* Text Section */}
-                    <div className='flex flex-col gap-6'>
-                        <h2
-                            ref={headingRef}
-                            className='font-michroma text-2xl sm:text-3xl lg:text-4xl font-bold uppercase leading-tight text-blue-200'
-                        >
-                            {news[currentIndex].head}
-                        </h2>
-
-                        <p
-                            ref={descriptionRef}
-                            className='font-circular-web text-sm sm:text-base text-blue-75 leading-relaxed'
-                        >
-                            {news[currentIndex].desc}
-                        </p>
-
-                        {/* Navigation Controls */}
-                        <div className='flex gap-4 pt-4'>
-                            <button
-                                onClick={handlePrev}
-                                className='flex items-center justify-center w-12 h-12 border border-blue-300 rounded-lg hover:bg-blue-300 transition-colors duration-300'
-                                aria-label='Previous news'
-                            >
-                                <svg
-                                    className='w-5 h-5 text-blue-300 hover:text-blue-200'
-                                    fill='none'
-                                    stroke='currentColor'
-                                    viewBox='0 0 24 24'
-                                >
-                                    <path
-                                        strokeLinecap='round'
-                                        strokeLinejoin='round'
-                                        strokeWidth={2}
-                                        d='M15 19l-7-7 7-7'
-                                    />
-                                </svg>
-                            </button>
-
-                            <button
-                                onClick={handleNext}
-                                className='flex items-center justify-center w-12 h-12 border border-blue-300 rounded-lg hover:bg-blue-300 transition-colors duration-300'
-                                aria-label='Next news'
-                            >
-                                <svg
-                                    className='w-5 h-5 text-blue-300 hover:text-blue-200'
-                                    fill='none'
-                                    stroke='currentColor'
-                                    viewBox='0 0 24 24'
-                                >
-                                    <path
-                                        strokeLinecap='round'
-                                        strokeLinejoin='round'
-                                        strokeWidth={2}
-                                        d='M9 5l7 7-7 7'
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-
-                        {/* Slide Indicator */}
-                        <div className='flex gap-2 pt-2'>
-                            {news.map((_, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => animateSlide(idx)}
-                                    className={`h-2 rounded-full transition-all duration-300 ${idx === currentIndex ? 'w-8 bg-blue-300' : 'w-2 bg-blue-75'
-                                        }`}
-                                    aria-label={`Go to slide ${idx + 1}`}
+                <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start'>
+                    {/* Sticky Image Section */}
+                    <div className='relative lg:sticky lg:top-20 h-[500px] lg:h-[600px]'>
+                        <div className='relative w-full h-full rounded-2xl overflow-hidden'>
+                            {news.map((item, index) => (
+                                <img
+                                    key={index}
+                                    ref={(el) => (imageRefs.current[index] = el)}
+                                    src={item.img}
+                                    alt={item.head}
+                                    className='absolute inset-0 w-full h-full object-cover transition-opacity duration-500'
+                                    style={{
+                                        opacity: index === activeCard ? 1 : 0,
+                                        zIndex: index === activeCard ? 10 : 1
+                                    }}
                                 />
                             ))}
                         </div>
                     </div>
+
+                    {/* Scrolling Content Section */}
+                    <div className='flex flex-col gap-20 lg:gap-32'>
+                        {news.map((item, index) => (
+                            <div
+                                key={index}
+                                ref={(el) => (contentRefs.current[index] = el)}
+                                className='flex flex-col gap-6 min-h-[400px] transition-opacity duration-300'
+                            >
+                                <div className='flex items-center gap-4'>
+                                    <div className='flex items-center justify-center w-10 h-10 rounded-full bg-blue-300 text-blue-900 font-bold text-sm'>
+                                        {index + 1}
+                                    </div>
+                                    <div className='h-px flex-1 bg-gradient-to-r from-blue-300 to-transparent' />
+                                </div>
+
+                                <h2 className='font-michroma text-2xl sm:text-3xl lg:text-4xl font-bold uppercase leading-tight text-blue-200'>
+                                    {item.head}
+                                </h2>
+
+                                <p className='font-circular-web text-base sm:text-lg text-blue-75 leading-relaxed'>
+                                    {item.desc}
+                                </p>
+
+                                <div className='flex gap-3 pt-4'>
+                                    <button className='px-6 py-3 bg-blue-300 text-blue-900 font-semibold rounded-lg hover:bg-blue-400 transition-colors duration-300'>
+                                        Read More
+                                    </button>
+                                    <button className='px-6 py-3 border border-blue-300 text-blue-200 font-semibold rounded-lg hover:bg-blue-300 hover:text-blue-900 transition-colors duration-300'>
+                                        Share
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Progress Indicator */}
+                <div className='fixed bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg z-50'>
+                    {news.map((_, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => {
+                                contentRefs.current[idx]?.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center'
+                                })
+                            }}
+                            className={`h-2 rounded-full transition-all duration-300 ${idx === activeCard ? 'w-8 bg-blue-300' : 'w-2 bg-blue-75'
+                                }`}
+                            aria-label={`Go to news ${idx + 1}`}
+                        />
+                    ))}
                 </div>
             </div>
         </div>
