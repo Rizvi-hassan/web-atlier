@@ -19,11 +19,11 @@ function App() {
   useEffect(() => {
     const startExitTimer = setTimeout(() => {
       setIsLoaderExiting(true)
-    }, 1000)   // 2600
+    }, 2600)   // 2600
 
     const unmountLoaderTimer = setTimeout(() => {
       setLoading(false)
-    }, 1000)  // 3300
+    }, 3300)  // 3300
 
     return () => {
       clearTimeout(startExitTimer)
