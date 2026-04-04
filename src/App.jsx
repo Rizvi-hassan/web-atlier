@@ -1,120 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import Lenis from '@studio-freight/lenis';
+import { useEffect, useState } from 'react'
+
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger'
+import Hero from './components/Hero';
+import Navbar from './components/Navbar';
+import NewsLetter from './components/NewsLetter';
+import World from './components/World';
+
+gsap.registerPlugin(ScrollTrigger);
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [isLoaderExiting, setIsLoaderExiting] = useState(false)
+
+  useEffect(() => {
+    const startExitTimer = setTimeout(() => {
+      setIsLoaderExiting(true)
+    }, 1000)   // 2600
+
+    const unmountLoaderTimer = setTimeout(() => {
+      setLoading(false)
+    }, 1000)  // 3300
+
+    return () => {
+      clearTimeout(startExitTimer)
+      clearTimeout(unmountLoaderTimer)
+    }
+  }, [])
+
+  useEffect(() => {
+    const lenis = new Lenis();
+
+    lenis.on('scroll', ScrollTrigger.update)
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+
+    // Cleanup
+    return () => {
+      lenis.destroy();
+    };
+  }, [])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+    <main className='relative'>
+      <Navbar />
+      <Hero />
+      <NewsLetter />
+      <World />
+
+      {loading && (
+        <div
+          className={`fixed inset-0 z-90 bg-black transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${isLoaderExiting ? '-translate-y-full' : 'translate-y-0'
+            }`}
         >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          <img
+            src='/images/logo.png'
+            alt='Loading logo'
+            className='absolute left-1/2 top-1/2 w-28 -translate-x-1/2 -translate-y-1/2'
+          />
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      )}
+    </main>
   )
 }
 
